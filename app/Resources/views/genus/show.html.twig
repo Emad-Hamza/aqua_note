@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Genus {{ name }}{% endblock %}
+{% block body %}
+<h1>The Genus {{ name }}</h1>
+
+    <a href="{{ path('genus_show_notes', {'genusName': name}) }}">Json Notes</a>
+
+
+{% endblock %}
