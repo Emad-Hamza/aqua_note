@@ -23,9 +23,15 @@ class GenusController extends Controller
     public function showAction($genusName)
     {
 
-//        $templating = $this->container->get('templating');
+//        $notes = [
+//            'Octopus aked me a riddle, outsmarted me',
+//            'I counted 8 legs... as they wrapped around me',
+//            'Inked!'
+//        ];
+
         return $this->render('genus/show.html.twig', [
             'name' => $genusName,
+//            'notes' => $notes
 
         ]);
 
@@ -38,10 +44,10 @@ class GenusController extends Controller
     {
 
         $notes = [
-            ["name"=>"Edward","phone"=>"056 5733 3475","email"=>"sem.ut.cursus@nonummyipsum.co.uk","company"=>"Eu Ligula Aenean Corp."],
-            ["name"=>"Jolene","phone"=>"(016977) 9645","email"=>"ac.libero@etrisus.com","company"=>"Nunc Lectus Limited"],
-            ["name"=>"Rhea","phone"=>"056 0388 6065","email"=>"Cras@Donecdignissimmagna.com","company"=>"Pellentesque PC"]
 
+            ['id' => 1, 'username' => 'AquaPelham', 'avatarUri' => '/images/leanna.jpeg', 'note' =>"Octopus aked me a riddle, outsmarted me", 'date' => 'Dec. 10, 2015' ],
+                ['id' => 2, 'username' => 'AquaWeaver', 'avatarUri' => '/images/ryan.jpeg', 'note' =>"I counted 8 legs... as they wrapped around me", 'date' => 'Dec. 1, 2015'],
+                    ['id' => 3, 'username' => 'AquaPelham', 'avatarUri' => '/images/leanna.jpeg', 'note' =>"Inked!", 'date' => 'Aug. 20, 2015']
         ];
 
         $data = [
