@@ -9,6 +9,7 @@
 namespace AppBundle\Controller;
 
 
+use AppBundle\Entity\Genus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -17,42 +18,81 @@ use Symfony\Component\HttpFoundation\Response;
 
 class GenusController extends Controller
 {
+
     /**
-     * @Route("/genus/{genusName}")
+     * @Route("/genus/new")
+     */
+    public function newAction()
+    {
+        $genus = new Genus();
+        $genus->setName("Octopus" . rand(1, 100));
+        $genus->setSubFamly("Octopodinae");
+        $genus->setSpeciesCount(rand(100, 99999));
+
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($genus);
+        $em->flush();
+
+        return new Response("<html><body>Genus created!</body></html>");
+    }
+
+    /**
+     * @Route("/genus")
+     */
+    public function listAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        dump($em->getRepository('AppBundle:Genus'));
+        $genuses = $em->getRepository('AppBundle:Genus')
+            ->findAllPublishedOrderedBySize();
+//        dump($genuses);die;
+
+        return $this->render('genus/list.html.twig',
+            [
+                'genuses' => $genuses
+            ]);
+
+    }
+
+    /**
+     * @Route("/genus/{genusName}", name="genus_show")
      */
     public function showAction($genusName)
     {
 
-//        $notes = [
-//            'Octopus aked me a riddle, outsmarted me',
-//            'I counted 8 legs... as they wrapped around me',
-//            'Inked!'
-//        ];
-
-        $funFact = 'Octopuses can change the color of their body in just *three-tenths* of a second!';
-
-        $cache = $this->get('doctrine_cache.providers.my_markdown_cache');
-        $key = md5($funFact);
-
-        if ($cache->contains($key))
+        $em = $this->getDoctrine()->getManager();
+        $genus = $em->getRepository("AppBundle:Genus")
+            ->findOneBy(['name' => $genusName]);
+        if(!$genus)
         {
-            $cache->fetch($key);
+            throw $this->createNotFoundException('No genus found');
         }
-        else
-        {
-            sleep(1);
-            $funFact = $this->get('markdown.parser')->transform($funFact);
-            $cache->save($key, $funFact);
-        }
+
+
+//        $cache = $this->get('doctrine_cache.providers.my_markdown_cache');
+//        $key = md5($funFact);
+//
+//        if ($cache->contains($key))
+//        {
+//            $cache->fetch($key);
+//        }
+//        else
+//        {
+//            sleep(1);
+//            $funFact = $this->get('markdown.parser')->transform($funFact);
+//            $cache->save($key, $funFact);
+//        }
 
         return $this->render('genus/show.html.twig', [
-            'name' => $genusName,
-            'funFact' => $funFact,
-//            'notes' => $notes
+
+            'genus'=>$genus
 
         ]);
 
     }
+
+
 
     /**
      * @Route("/genus/{genusName}/notes", name="genus_show_notes",  methods={"GET"})
