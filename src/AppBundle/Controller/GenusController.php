@@ -10,6 +10,7 @@ namespace AppBundle\Controller;
 
 
 use AppBundle\Entity\Genus;
+use AppBundle\Entity\GenusNote;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -19,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 class GenusController extends Controller
 {
 
+
     /**
      * @Route("/genus/new")
      */
@@ -26,12 +28,20 @@ class GenusController extends Controller
     {
         $genus = new Genus();
         $genus->setName("Octopus" . rand(1, 100));
-        $genus->setSubFamly("Octopodinae");
+        $genus->setSubFamily("Octopodinae");
         $genus->setSpeciesCount(rand(100, 99999));
 
+        $genusNote = new GenusNote();
+        $genusNote->setUsername('AquaWeaver');
+        $genusNote->setUserAvatarFilename('ryan.jpeg');
+        $genusNote->setNote('I counted 8 legs... as they wrapped around me');
+        $genusNote->setCreatedAt(new \DateTime('-1 month'));
+
+        $genusNote->setGenus($genus);
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($genus);
+        $em->persist($genusNote);
         $em->flush();
 
         return new Response("<html><body>Genus created!</body></html>");
@@ -43,9 +53,9 @@ class GenusController extends Controller
     public function listAction()
     {
         $em = $this->getDoctrine()->getManager();
-        dump($em->getRepository('AppBundle:Genus'));
+//        dump($em->getRepository('AppBundle:Genus'));
         $genuses = $em->getRepository('AppBundle:Genus')
-            ->findAllPublishedOrderedBySize();
+            ->findAllPublishedOrderedByRecentlyActive();
 //        dump($genuses);die;
 
         return $this->render('genus/list.html.twig',
@@ -60,6 +70,8 @@ class GenusController extends Controller
      */
     public function showAction($genusName)
     {
+
+
 
         $em = $this->getDoctrine()->getManager();
         $genus = $em->getRepository("AppBundle:Genus")
@@ -84,10 +96,16 @@ class GenusController extends Controller
 //            $cache->save($key, $funFact);
 //        }
 
+        $this->get('logger')
+            ->info('Showing genus: '.$genusName);
+
+        $recentNotes = $em->getRepository("AppBundle:GenusNote")->findAllRecentNotesForGenus($genus);
+
+
         return $this->render('genus/show.html.twig', [
 
-            'genus'=>$genus
-
+            'genus'=>$genus,
+            'recentNoteCount' => count($recentNotes),
         ]);
 
     }
@@ -95,17 +113,24 @@ class GenusController extends Controller
 
 
     /**
-     * @Route("/genus/{genusName}/notes", name="genus_show_notes",  methods={"GET"})
+     * @Route("/genus/{name}/notes", name="genus_show_notes",  methods={"GET"})
      */
-    public function getNotesAction()
+    public function getNotesAction(Genus $genus)
     {
 
-        $notes = [
+        $notes = [];
+        foreach ($genus->getNotes() as $note)
+        {
+            $notes[] =
+                [
+                    'id' => $note->getId(),
+                    'username' => $note->getUsername(),
+                    'avatarUri' => '/images/'.$note->getUserAvatarFilename(),
+                    'note' => $note->getNote(),
+                    'date' => $note->getCreatedAt()->format('M d, Y'),
+                ];
+        }
 
-            ['id' => 1, 'username' => 'AquaPelham', 'avatarUri' => '/images/leanna.jpeg', 'note' => "Octopus aked me a riddle, outsmarted me", 'date' => 'Dec. 10, 2015'],
-            ['id' => 2, 'username' => 'AquaWeaver', 'avatarUri' => '/images/ryan.jpeg', 'note' => "I counted 8 legs... as they wrapped around me", 'date' => 'Dec. 1, 2015'],
-            ['id' => 3, 'username' => 'AquaPelham', 'avatarUri' => '/images/leanna.jpeg', 'note' => "Inked!", 'date' => 'Aug. 20, 2015']
-        ];
 
         $data = [
             'notes' => $notes,
