@@ -116,7 +116,7 @@ use Doctrine\ORM\Mapping as ORM;
      */
     public function getFunFact()
     {
-        return $this->funFact;
+        return '<i>TEST</i>'.$this->funFact;
     }
 
     /**
