@@ -18,7 +18,7 @@ class GenusRepository extends EntityRepository
     /**
      * @return Genus[]
      */
-    function findAllPublishedOrderedByRecentlyActive()
+    public function findAllPublishedOrderedByRecentlyActive()
     {
         return $this->createQueryBuilder('genus')
             ->andWhere('genus.isPublished = :isPublished')

@@ -139,5 +139,5 @@ class Genus
         return $this->isPublished;
     }
 
-    
+
 }
