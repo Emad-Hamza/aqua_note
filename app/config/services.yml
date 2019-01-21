@@ -38,6 +38,10 @@ services:
         arguments: ['@markdown.parser', '@doctrine_cache.providers.my_markdown_cache']
         public: true
 
+    AppBundle\Doctrine\HashPasswordListener:
+        tags:
+            - { name: doctrine.event_subscriber}
+
 #not needed because it's autoregistered and autowired through the _defaults
 #    app.twig.markdown_extension:
 #        class: AppBundle\Twig\MarkdownExtension
