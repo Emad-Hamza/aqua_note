@@ -49,7 +49,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
      * LoginFormAuthenticator constructor.
      */
     public function __construct(FormFactoryInterface $formFactory, EntityManagerInterface $em, RouterInterface $router,
-UserPasswordEncoderInterface $userPasswordEncoder)
+                                UserPasswordEncoderInterface $userPasswordEncoder)
     {
 
         $this->formFactory = $formFactory;
@@ -79,6 +79,7 @@ UserPasswordEncoderInterface $userPasswordEncoder)
             Security::LAST_USERNAME,
             $data['_username']
         );
+
         return $data;
 
 
@@ -110,13 +111,40 @@ UserPasswordEncoderInterface $userPasswordEncoder)
 
     protected function getLoginUrl()
     {
+
         return $this->router->generate('security_login');
     }
 
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        return new RedirectResponse($this->router->generate('homepage'));
+
+        $key = '_security.main.target_path';
+        $redirectUrl = $request->getSession()->get($key);
+
+
+        if(!empty($redirectUrl)) {
+            return new RedirectResponse($redirectUrl);
+        }
+
+        else
+        {
+            return new RedirectResponse($this->router->generate('homepage'));
+
+        }
+//
+//
+//        dump($x);
+////        die('lel');
+//
+//        if (!$x)
+//        {
+//            return new RedirectResponse($x);
+//        }
+//        else {
+//        return new RedirectResponse($this->router->generate('homepage'));
+//
+//        }
     }
 
 

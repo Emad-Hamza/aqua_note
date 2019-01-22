@@ -31,3 +31,6 @@ security:
                 - AppBundle\Security\LoginFormAuthenticator
             logout:
                 path: /logout
+
+    access_control:
+        - { path: ^/admin, roles: ROLE_USER }

@@ -15,6 +15,8 @@ class SecurityController extends Controller
      */
     public function loginAction(AuthenticationUtils $authenticationUtils)
     {
+
+
         $authenticationUtils = $this->get('security.authentication_utils');
 
 
